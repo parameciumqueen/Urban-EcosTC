@@ -67,8 +67,8 @@ abline(h=0, col='red')
 summary(my_glm)
 #the effect size
 summary(my_glm)$adj.r.squared
-
-
+#finding the tau coeffeicent for phosphorus - didnt work
+cor(x=phosdata$phostot,y=oxydata$peribio, method = c("kendall"), use="pairwise")
 
 
 # LOOK AT DISSOLVED OXYGEN AND PERIPHYTON
@@ -85,9 +85,10 @@ ggplot(oxydata, aes(dissoxyper,peribio)) + geom_point(alpha = 0.5) + geom_smooth
 #looking at my assumptions for oxygen as well as how badly skewed everything is
 oxy_glm <- lm(peribio ~ dissoxyper, data=oxydata)
 hist(oxy_glm$residuals, main='Model Residuals', xlab='Residual', col='light grey', right=F)
-#finding the tau coeffiecent for oxygen
-
+#finding the tau coefficient for oxygen - gave me -0.120
 cor(x=oxydata$dissoxyper,y=oxydata$peribio, method = c("kendall"), use="pairwise")
+# finding r gave me 0.0103
+cor(oxydata$dissoxyper,oxydata$peribio)
 
 #intrepret GLM from phosprous - need my biostats notes tbh
 
