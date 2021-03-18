@@ -67,8 +67,10 @@ abline(h=0, col='red')
 summary(my_glm)
 #the effect size
 summary(my_glm)$adj.r.squared
-#finding the tau coeffeicent for phosphorus - didnt work
-cor(x=phosdata$phostot,y=oxydata$peribio, method = c("kendall"), use="pairwise")
+#finding the tau coeffeicent for phosphorus 0.09
+cor(x=phosdata$phostot,y=phosdata$peribio, method = c("kendall"), use="pairwise")
+#finding pearson coeff - 0.1477
+cor(x=phosdata$phostot,y=phosdata$peribio)
 
 
 # LOOK AT DISSOLVED OXYGEN AND PERIPHYTON
@@ -85,10 +87,29 @@ ggplot(oxydata, aes(dissoxyper,peribio)) + geom_point(alpha = 0.5) + geom_smooth
 #looking at my assumptions for oxygen as well as how badly skewed everything is
 oxy_glm <- lm(peribio ~ dissoxyper, data=oxydata)
 hist(oxy_glm$residuals, main='Model Residuals', xlab='Residual', col='light grey', right=F)
-#finding the tau coefficient for oxygen - gave me -0.120
+#finding the tau coefficient for oxygen - gave me 0.120
 cor(x=oxydata$dissoxyper,y=oxydata$peribio, method = c("kendall"), use="pairwise")
 # finding r gave me 0.0103
 cor(oxydata$dissoxyper,oxydata$peribio)
 
-#intrepret GLM from phosprous - need my biostats notes tbh
+
+#NITRATES AND PERIPHYTON
+#creating the df with average for each variable
+nitratecleanres <- nitratepbm %>% group_by(SITE_NO,PARM_NM) %>% summarize(median_val = median(RESULT_VA),sd_val = sd(RESULT_VA)) %>% ungroup()
+#
+nitratedata <- pivot_wider(nitratecleanres,id_cols = SITE_NO, names_from = PARM_NM, values_from = median_val) %>% 
+  na.omit()
+#
+nitratedata <- nitratedata %>% rename(peribio = `Periphyton biomass`,nitrate = `Nitrate, wf`)
+
+ggplot(nitratedata, aes(peribio,nitrate)) + geom_point(alpha = 0.5) + geom_smooth(method = "lm", se = FALSE)
+
+plot(nitratedata$nitrate)
+
+#phosphates 
+#GLM of oxygen
+#removing outliers - the 4 high points 
+
+
+
 
