@@ -47,14 +47,47 @@ phoscleanres <- phospbRES %>% group_by(SITE_NO,COUNTY_NM,PARM_NM) %>% summarize(
 #only getting the averages for having phos and periphyton
 phosdata <- pivot_wider(phoscleanres,id_cols = SITE_NO, names_from = PARM_NM, values_from = median_val) %>% 
   na.omit()
-
 #creating a plot so I can visualize the data 
 library(ggplot2)
 # might need to change the col names because its hard to do a ggplot with the long names 
 phosdata <- phosdata %>% rename(peribio = `Periphyton biomass`,phostot = `Phosphorus, bs,total`)
-ggplot(phosdata, aes(peribio,phostot)) + geom_point(alpha = 0.5) + geom_smooth(method = "lm", se = FALSE)
-# do a GLM - phosphorus 
-# do a GLM - nitrogen 
-# look at dissolved oxygen
+#the scatterplot with a line of best fit
+ggplot(phosdata, aes(phostot,peribio)) + geom_point(alpha = 0.5) + geom_smooth(method = "lm", se = FALSE)
 
+#GLM WITH PHOSPHOROUS
+my_glm <- lm(peribio ~ phostot, data=phosdata)
+#first need to meet assumptions - linearity: WHY ARE THE TWO PLOTS SO DIFFERENT?
+plot(phosdata$phostot, phosdata$peribio, xlab='phosporous', ylab= 'periphyton', pch=5)
+#normaility of residuals- right tailed skweded - might need to be changed 
+hist(my_glm$residuals, main='Model Residuals', xlab='Residual', col='light grey', right=F)
+#confirming equal varience - not entirely equal tbh
+plot(my_glm$fitted.values, my_glm$residuals, xlab= 'Fitted Values', ylab='Residuals', main='Residual Plot', pch=20)
+abline(h=0, col='red')
+#the GLM with no interaction
+summary(my_glm)
+#the effect size
+summary(my_glm)$adj.r.squared
+
+
+
+
+# LOOK AT DISSOLVED OXYGEN AND PERIPHYTON
+#what kind of data do we have and how much of it?
+oxynm <- dissoxypbmRES %>% group_by(PARM_NM) %>% summarise(count = n())
+#obtaining the average for each variable for each site 
+oxycleanres <- dissoxypbmRES %>% group_by(SITE_NO,COUNTY_NM,PARM_NM) %>% summarize(median_val = median(RESULT_VA),sd_val = sd(RESULT_VA)) %>% ungroup()
+#only getting the averages for having phos and periphyton
+oxydata <- pivot_wider(oxycleanres,id_cols = SITE_NO, names_from = PARM_NM, values_from = median_val) %>% 
+  na.omit()
+#creating a plot so I can visualize the data and first changing the col names
+oxydata <- oxydata %>% rename(dissoxyper = `Diss oxygen,%saturtn`,peribio = `Periphyton biomass`)
+ggplot(oxydata, aes(dissoxyper,peribio)) + geom_point(alpha = 0.5) + geom_smooth(method = "lm", se = FALSE)
+#looking at my assumptions for oxygen as well as how badly skewed everything is
+oxy_glm <- lm(peribio ~ dissoxyper, data=oxydata)
+hist(oxy_glm$residuals, main='Model Residuals', xlab='Residual', col='light grey', right=F)
+#finding the tau coeffiecent for oxygen
+
+cor(x=oxydata$dissoxyper,y=oxydata$peribio, method = c("kendall"), use="pairwise")
+
+#intrepret GLM from phosprous - need my biostats notes tbh
 
