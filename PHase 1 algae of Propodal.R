@@ -161,9 +161,23 @@ my_glm <- lm(A_MMI ~ disoxy, data=totaloxy)
 summary(my_glm)
 plot(my_glm)
 termplot(my_glm, partial.resid = TRUE, col.res = "blue",smooth=panel.smooth)
+# it is a significant linear predictor 
+
+
+## PHOSPHORUS
+# the data
+library(readr)
+phosdata <- read.csv("~/Documents/phosph. wu all regions/Results.csv")
+View(phosdata)
+# cleaning up the data 
+#take out the < - not working
+phosdata <- read.csv("~/Documents/phosph. wu all regions/Results.csv")
+cleanphos <- phosdata %>% mutate(resultsbib = ifelse(REMARK_CD == '<',0,RESULT_VA)) 
+
+
+#what the hell is E? - estimated 
+cleanphos1 <- phosdata %>% select(PARM_NM,SITE_NO,RESULT_VA)
 
 
 
 
-#Phosphates
-#Dissolved Oxygen
