@@ -161,8 +161,12 @@ my_glm <- lm(A_MMI ~ disoxy, data=totaloxy)
 summary(my_glm)
 plot(my_glm)
 termplot(my_glm, partial.resid = TRUE, col.res = "blue",smooth=panel.smooth)
+termplot(my_glm)
 # it is a significant linear predictor 
+#GAM so that I have something nice?
 
+gam_mod <- gam(disoxy ~ s(A_MMI), data = totaloxy)
+summary(gam_mod)
 
 ## PHOSPHORUS
 # the data
